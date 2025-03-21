@@ -54,7 +54,7 @@ sg47_model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accur
 # Step 5: Train Model
 sg47_history = sg47_model.fit(sg47_X_train, sg47_y_train, epochs=50, batch_size=16, validation_data=(sg47_X_test, sg47_y_test), verbose=1)
 
-!pip install streamlit
+# !pip install streamlit
 
 import streamlit as st
 print("Streamlit imported successfully!")
