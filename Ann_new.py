@@ -93,6 +93,20 @@ def sg47_run_dashboard():
     accuracy = sg47_model.evaluate(sg47_X_test, sg47_y_test, verbose=0)[1]
     st.metric(label="Model Accuracy", value=f"{accuracy*100:.2f}%")
 
+    # **Live Predictions Based on Filters**
+    st.subheader("Test with Hyperparameters")
+
+    # User Input for New Prediction
+    user_input = st.text_area("Enter comma-separated feature values:")
+    
+    if st.button("Predict Outcome"):
+        try:
+            user_data = np.array([float(x) for x in user_input.split(",")]).reshape(1, -1)
+            prediction = sg47_model.predict(user_data)[0][0]
+            st.success(f"Predicted Success Probability: {prediction:.2f}")
+        except:
+            st.error("Invalid input! Please enter numerical values separated by commas.")
+
     # ADDING VISUALIZATIONS BELOW
 
     ## **Model Accuracy Over Epochs**
