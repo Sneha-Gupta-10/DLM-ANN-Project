@@ -89,23 +89,30 @@ def sg47_run_dashboard():
     num_layers = st.sidebar.slider("Number of Layers", 1, 5, step=1, value=3)
     neurons_per_layer = st.sidebar.slider("Neurons per Layer", 8, 128, step=8, value=32)
 
+    # Creating sliders for each numerical feature
+    feature_inputs = {}
+    for col in sg47_numerical_cols:
+        feature_inputs[col] = st.sidebar.slider(f"{col}", 
+                                                float(sg47_DigitalMarketingCampaigns_data[col].min()), 
+                                                float(sg47_DigitalMarketingCampaigns_data[col].max()), 
+                                                float(sg47_DigitalMarketingCampaigns_data[col].mean()))
+
+    # Creating dropdowns for categorical features
+    for col in sg47_categorical_cols:
+        unique_values = list(sg47_DigitalMarketingCampaigns_data[col].unique())
+        feature_inputs[col] = st.sidebar.selectbox(f"{col}", unique_values)
+
+    # Convert input features into numpy array for prediction
+    input_data = np.array([list(feature_inputs.values())]).reshape(1, -1)
+
+    # **Live Prediction Based on Selected Features**
+    if st.sidebar.button("Predict Outcome"):
+        prediction = sg47_model.predict(input_data)[0][0]
+        st.success(f"Predicted Success Probability: {prediction:.2f}")
+
     # Model Accuracy
     accuracy = sg47_model.evaluate(sg47_X_test, sg47_y_test, verbose=0)[1]
     st.metric(label="Model Accuracy", value=f"{accuracy*100:.2f}%")
-
-    # **Live Predictions Based on Filters**
-    st.subheader("Test with Hyperparameters")
-
-    # User Input for New Prediction
-    user_input = st.text_area("Enter comma-separated feature values:")
-    
-    if st.button("Predict Outcome"):
-        try:
-            user_data = np.array([float(x) for x in user_input.split(",")]).reshape(1, -1)
-            prediction = sg47_model.predict(user_data)[0][0]
-            st.success(f"Predicted Success Probability: {prediction:.2f}")
-        except:
-            st.error("Invalid input! Please enter numerical values separated by commas.")
 
     # ADDING VISUALIZATIONS BELOW
 
