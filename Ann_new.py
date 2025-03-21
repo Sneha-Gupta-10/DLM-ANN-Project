@@ -42,7 +42,7 @@ sg47_y = sg47_DigitalMarketingCampaigns_data['success']
 sg47_X_train, sg47_X_test, sg47_y_train, sg47_y_test = train_test_split(sg47_X, sg47_y, test_size=0.2, random_state=5504714)
 
 # GitHub raw file link
-MODEL_URL = "https://raw.githubusercontent.com/Sneha-Gupta-10/DLM-ANN-Project/refs/heads/main/sg47_ann_model.h5"
+MODEL_URL = "MODEL_URL = "https://raw.githubusercontent.com/Sneha-Gupta-10/DLM-ANN-Project/main/sg47_ann_model.h5"
 MODEL_PATH = "sg47_ann_model.h5"
 
 @st.cache_resource
