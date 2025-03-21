@@ -1,3 +1,13 @@
+import os
+import subprocess
+
+# Ensure TensorFlow is installed
+try:
+    import tensorflow as tf
+except ModuleNotFoundError:
+    subprocess.check_call(["pip", "install", "tensorflow-cpu==2.9.1"])
+    import tensorflow as tf
+
 import pandas as pd
 import numpy as np
 import tensorflow as tf
