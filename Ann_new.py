@@ -81,6 +81,14 @@ with open(HISTORY_PATH, "rb") as f:
 def sg47_run_dashboard():
     st.title("Marketing Campaign Success Prediction")
 
+    # **Sidebar Filters (Hyperparameter Selection)**
+    epochs = st.sidebar.slider("Epochs", 10, 100, step=10, value=50)
+    batch_size = st.sidebar.slider("Batch Size", 8, 64, step=8, value=16)
+    learning_rate = st.sidebar.slider("Learning Rate", 0.0001, 0.1, step=0.0001, format="%.4f", value=0.001)
+    activation_function = st.sidebar.selectbox("Activation Function", ["relu", "sigmoid", "tanh", "softmax"], index=0)
+    num_layers = st.sidebar.slider("Number of Layers", 1, 5, step=1, value=3)
+    neurons_per_layer = st.sidebar.slider("Neurons per Layer", 8, 128, step=8, value=32)
+
     # Model Accuracy
     accuracy = sg47_model.evaluate(sg47_X_test, sg47_y_test, verbose=0)[1]
     st.metric(label="Model Accuracy", value=f"{accuracy*100:.2f}%")
