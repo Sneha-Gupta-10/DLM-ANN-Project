@@ -89,30 +89,6 @@ def sg47_run_dashboard():
     num_layers = st.sidebar.slider("Number of Layers", 1, 5, step=1, value=3)
     neurons_per_layer = st.sidebar.slider("Neurons per Layer", 8, 128, step=8, value=32)
 
-    # Creating dropdowns for categorical features
-    for col in sg47_categorical_cols:
-        unique_values = list(sg47_DigitalMarketingCampaigns_data[col].unique())
-        feature_inputs[col] = st.sidebar.selectbox(f"{col}", unique_values)
-
-    # Convert input features into numpy array for prediction
-    input_data = np.array([list(feature_inputs.values())]).reshape(1, -1)
-
-    # **Live Prediction Based on Selected Features**
-    if st.sidebar.button("Predict Outcome"):
-        prediction = sg47_model.predict(input_data)[0][0]
-        st.success(f"Predicted Success Probability: {prediction:.2f}")
-
-    # 📌 **Show Accuracy on a Subset of Test Data Matching Filters**
-    matching_data = sg47_X_test.copy()
-    for col in feature_inputs:
-        matching_data = matching_data[matching_data[col] == feature_inputs[col]]
-
-    if not matching_data.empty:
-        subset_accuracy = sg47_model.evaluate(matching_data, sg47_y_test.loc[matching_data.index], verbose=0)[1]
-        st.metric(label="Model Accuracy (for selected feature values)", value=f"{subset_accuracy*100:.2f}%")
-    else:
-        st.warning("No matching data found for selected feature values. Accuracy may not be available.")
-
     # Model Accuracy
     accuracy = sg47_model.evaluate(sg47_X_test, sg47_y_test, verbose=0)[1]
     st.metric(label="Model Accuracy", value=f"{accuracy*100:.2f}%")
