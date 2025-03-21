@@ -1,6 +1,6 @@
 pandas
 numpy
-tensorflow-cpu==2.9.1
+tensorflow
 scikit-learn
 matplotlib
 seaborn
