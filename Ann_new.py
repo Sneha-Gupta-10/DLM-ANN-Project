@@ -90,13 +90,22 @@ def sg47_run_dashboard():
     ax.set_title("Model Accuracy")
     st.pyplot(fig)
     
-    st.subheader("Prediction vs Actual Values")
-    sg47_y_pred = (sg47_model.predict(sg47_X_test) > 0.5).astype("int32")
+    # New: Feature Importance Visualization (using mean absolute weights)
+    st.subheader("Feature Importance")
+    feature_importance = np.mean(np.abs(sg47_model.get_weights()[0]), axis=1)
+    feature_names = sg47_X.columns
     fig, ax = plt.subplots()
-    sns.scatterplot(x=sg47_y_test, y=sg47_y_pred.ravel(), ax=ax)
-    ax.set_xlabel("Actual Values")
-    ax.set_ylabel("Predicted Values")
-    ax.set_title("Prediction vs Actual")
+    sns.barplot(x=feature_importance, y=feature_names, ax=ax)
+    ax.set_title("Feature Importance based on ANN Weights")
+    st.pyplot(fig)
+    
+    # New: Distribution of Predicted Probabilities
+    st.subheader("Distribution of Predicted Probabilities")
+    sg47_y_prob = sg47_model.predict(sg47_X_test)
+    fig, ax = plt.subplots()
+    sns.histplot(sg47_y_prob, bins=20, kde=True, ax=ax)
+    ax.set_title("Predicted Probability Distribution")
+    ax.set_xlabel("Predicted Probability of Success")
     st.pyplot(fig)
     
     st.subheader("Confusion Matrix")
