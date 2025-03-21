@@ -79,7 +79,7 @@ with open(HISTORY_PATH, "rb") as f:
 
 # Streamlit Dashboard
 def sg47_run_dashboard():
-    st.title("Marketing Campaign Success Prediction")
+    st.title("Digital Marketing Campaign Success Prediction")
 
     # **Sidebar Filters (Hyperparameter Selection)**
     epochs = st.sidebar.slider("Epochs", 10, 100, step=10, value=50)
