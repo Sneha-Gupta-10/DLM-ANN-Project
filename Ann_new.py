@@ -56,6 +56,11 @@ sg47_history = sg47_model.fit(sg47_X_train, sg47_y_train, epochs=50, batch_size=
 # Save Model
 sg47_model.save("sg47_ann_model.h5")
 
+# Cache the model for Streamlit
+@st.cache_resource
+def load_sg47_model():
+    return tf.keras.models.load_model("sg47_ann_model.h5")
+
 # Step 5: Streamlit Dashboard Code
 def sg47_run_dashboard():
     st.title("Marketing Campaign Success Prediction")
