@@ -11,6 +11,36 @@ import streamlit as st
 import os
 import requests
 
+# File ID from Google Drive link
+sg47_file_id = '1-mdmgqVhtp3fqMKuDK1yBzV6MH2OiXYj'
+
+# Construct the download URL
+sg47_download_url = f'https://drive.google.com/uc?id={sg47_file_id}'
+
+# Load the dataset
+sg47_DigitalMarketingCampaigns_data = pd.read_csv(sg47_download_url)
+
+# Step 2: Data Preprocessing
+sg47_DigitalMarketingCampaigns_data.drop(columns=['campaign_id'], inplace=True)  # Remove unnecessary ID column
+
+# Encode categorical variables using Ordinal Encoding
+sg47_categorical_cols = ['company_size', 'industry', 'marketing_channel', 'target_audience_area','target_audience_age',
+                          'region', 'device', 'operating_system', 'browser','success']
+sg47_ordinal_encoder = OrdinalEncoder()
+sg47_DigitalMarketingCampaigns_data[sg47_categorical_cols] = sg47_ordinal_encoder.fit_transform(sg47_DigitalMarketingCampaigns_data[sg47_categorical_cols])
+
+# Normalize numerical features using Min-Max Scaling
+sg47_numerical_cols = ['ad_spend', 'duration', 'engagement_metric', 'conversion_rate',
+                        'budget_allocation', 'audience_reach', 'device_conversion_rate',
+                        'os_conversion_rate', 'browser_conversion_rate']
+sg47_scaler = MinMaxScaler()
+sg47_DigitalMarketingCampaigns_data[sg47_numerical_cols] = sg47_scaler.fit_transform(sg47_DigitalMarketingCampaigns_data[sg47_numerical_cols])
+
+# Step 3: Split dataset into training and testing
+sg47_X = sg47_DigitalMarketingCampaigns_data.drop(columns=['success'])
+sg47_y = sg47_DigitalMarketingCampaigns_data['success']
+sg47_X_train, sg47_X_test, sg47_y_train, sg47_y_test = train_test_split(sg47_X, sg47_y, test_size=0.2, random_state=5504714)
+
 # GitHub raw file link
 MODEL_URL = "https://raw.githubusercontent.com/Sneha-Gupta-10/DLM-ANN-Project/refs/heads/main/sg47_ann_model.h5"
 MODEL_PATH = "sg47_ann_model.h5"
