@@ -40,12 +40,12 @@ def sg47_run_dashboard():
     num_layers = st.sidebar.slider("Number of Layers", 1, 5, step=1, value=3)
     neurons_per_layer = st.sidebar.slider("Neurons per Layer", 8, 128, step=8, value=32)
     
-    # Load pre-trained model
-    if os.path.exists("sg47_ann_model.h5"):
-        sg47_model = load_model("sg47_ann_model.h5")
-    
-    # Model accuracy display
+    # Load the model inside the function
+    sg47_model = load_sg47_model()
+
+    # Now evaluate
     accuracy = sg47_model.evaluate(sg47_X_test, sg47_y_test, verbose=0)[1]
+
     st.metric(label="Model Accuracy", value=f"{accuracy*100:.2f}%")
     
     # Visualizations
