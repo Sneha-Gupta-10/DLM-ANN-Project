@@ -81,38 +81,49 @@ def sg47_run_dashboard():
     accuracy = sg47_model.evaluate(sg47_X_test, sg47_y_test, verbose=0)[1]
     st.metric(label="Model Accuracy", value=f"{accuracy*100:.2f}%")
     
-    # Visualizations
-    st.subheader("Model Accuracy Over Epochs")
-    fig, ax = plt.subplots()
-    ax.plot(sg47_history.history['accuracy'], label='Train Accuracy')
-    ax.plot(sg47_history.history['val_accuracy'], label='Validation Accuracy')
-    ax.legend()
-    ax.set_title("Model Accuracy")
-    st.pyplot(fig)
+    # Arrange visualizations in two rows
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.subheader("Model Accuracy Over Epochs")
+        fig, ax = plt.subplots(figsize=(6, 4))
+        ax.plot(sg47_history.history['accuracy'], label='Train Accuracy')
+        ax.plot(sg47_history.history['val_accuracy'], label='Validation Accuracy')
+        ax.legend()
+        ax.set_title("Model Accuracy")
+        st.pyplot(fig)
     
-    # New: Feature Importance Visualization (using mean absolute weights)
-    st.subheader("Feature Importance")
-    feature_importance = np.mean(np.abs(sg47_model.get_weights()[0]), axis=1)
-    feature_names = sg47_X.columns
-    fig, ax = plt.subplots()
-    sns.barplot(x=feature_importance, y=feature_names, ax=ax)
-    ax.set_title("Feature Importance based on ANN Weights")
-    st.pyplot(fig)
+    with col2:
+        st.subheader("Confusion Matrix")
+        fig, ax = plt.subplots(figsize=(6, 4))
+        sns.heatmap(pd.crosstab(sg47_y_test, (sg47_model.predict(sg47_X_test) > 0.5).astype("int32").ravel()), annot=True, fmt='d', ax=ax)
+        ax.set_title("Confusion Matrix")
+        st.pyplot(fig)
     
-    # New: Distribution of Predicted Probabilities
-    st.subheader("Distribution of Predicted Probabilities")
-    sg47_y_prob = sg47_model.predict(sg47_X_test)
-    fig, ax = plt.subplots()
-    sns.histplot(sg47_y_prob, bins=20, kde=True, ax=ax)
-    ax.set_title("Predicted Probability Distribution")
-    ax.set_xlabel("Predicted Probability of Success")
-    st.pyplot(fig)
+    col3, col4 = st.columns(2)
+
+    with col3:
+        st.subheader("Feature Importance")
+        try:
+            feature_importance = np.mean(np.abs(sg47_model.get_weights()[0]), axis=1)
+            feature_names = sg47_X.columns
+            fig, ax = plt.subplots(figsize=(6, 4))
+            sns.barplot(x=feature_importance, y=feature_names, ax=ax)
+            ax.set_title("Feature Importance")
+            st.pyplot(fig)
+        except Exception as e:
+            st.warning(f"Feature Importance could not be calculated: {e}")
     
-    st.subheader("Confusion Matrix")
-    fig, ax = plt.subplots()
-    sns.heatmap(pd.crosstab(sg47_y_test, (sg47_model.predict(sg47_X_test) > 0.5).astype("int32").ravel()), annot=True, fmt='d', ax=ax)
-    ax.set_title("Confusion Matrix")
-    st.pyplot(fig)
+    with col4:
+        st.subheader("Predicted Probability Distribution")
+        sg47_y_prob = sg47_model.predict(sg47_X_test)
+        if sg47_y_prob.ndim == 2:
+            sg47_y_prob = sg47_y_prob.ravel()
+
+        fig, ax = plt.subplots(figsize=(6, 4))
+        sns.histplot(sg47_y_prob, bins=20, kde=True, ax=ax)
+        ax.set_title("Predicted Probability Distribution")
+        st.pyplot(fig)
 
 # Run Streamlit
 if __name__ == "__main__":
