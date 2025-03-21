@@ -18,7 +18,6 @@ sg47_download_url = f'https://drive.google.com/uc?id={sg47_file_id}'
 
 # Load the dataset
 sg47_DigitalMarketingCampaigns_data = pd.read_csv(sg47_download_url)
-sg47_DigitalMarketingCampaigns_data
 
 # Step 2: Data Preprocessing
 sg47_DigitalMarketingCampaigns_data.drop(columns=['campaign_id'], inplace=True)  # Remove unnecessary ID column
@@ -28,7 +27,6 @@ sg47_categorical_cols = ['company_size', 'industry', 'marketing_channel', 'targe
                           'region', 'device', 'operating_system', 'browser','success']
 sg47_ordinal_encoder = OrdinalEncoder()
 sg47_DigitalMarketingCampaigns_data[sg47_categorical_cols] = sg47_ordinal_encoder.fit_transform(sg47_DigitalMarketingCampaigns_data[sg47_categorical_cols])
-sg47_DigitalMarketingCampaigns_data
 
 # Normalize numerical features using Min-Max Scaling
 sg47_numerical_cols = ['ad_spend', 'duration', 'engagement_metric', 'conversion_rate',
@@ -36,7 +34,6 @@ sg47_numerical_cols = ['ad_spend', 'duration', 'engagement_metric', 'conversion_
                         'os_conversion_rate', 'browser_conversion_rate']
 sg47_scaler = MinMaxScaler()
 sg47_DigitalMarketingCampaigns_data[sg47_numerical_cols] = sg47_scaler.fit_transform(sg47_DigitalMarketingCampaigns_data[sg47_numerical_cols])
-sg47_DigitalMarketingCampaigns_data
 
 # Step 3: Split dataset into training and testing
 sg47_X = sg47_DigitalMarketingCampaigns_data.drop(columns=['success'])
