@@ -110,7 +110,7 @@ def sg47_run_dashboard():
     
     st.subheader("Confusion Matrix")
     fig, ax = plt.subplots()
-    sns.heatmap(pd.crosstab(sg47_y_test, sg47_y_pred.ravel()), annot=True, fmt='d', ax=ax)
+    sns.heatmap(pd.crosstab(sg47_y_test, (sg47_model.predict(sg47_X_test) > 0.5).astype("int32").ravel()), annot=True, fmt='d', ax=ax)
     ax.set_title("Confusion Matrix")
     st.pyplot(fig)
 
