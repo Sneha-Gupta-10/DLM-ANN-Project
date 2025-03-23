@@ -48,7 +48,7 @@ neurons_per_layer = st.sidebar.slider("Neurons per Layer", 8, 128, step=8, value
 @st.cache_resource
 def train_ann(epochs, batch_size, learning_rate, activation_function, num_layers, neurons_per_layer):
     model = Sequential()
-    model.add(Dense(neurons_per_layer, activation=activation_function, input_shape=(X_train.shape[1],)))
+    model.add(Dense(neurons_per_layer, activation=activation_function, input_shape=(sg47_X_train.shape[1],)))
     
     for _ in range(num_layers - 1):
         model.add(Dense(neurons_per_layer, activation=activation_function))
