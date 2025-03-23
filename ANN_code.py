@@ -17,7 +17,7 @@ df = pd.read_csv(DATASET_URL)
 # Data Preprocessing
 df.drop(columns=['campaign_id'], inplace=True)
 
-categorical_cols = ['company_size', 'industry', 'marketing_channel', 'target_audience_area','target_audience_age',
+categorical_cols = ['company_size', 'industry', 'marketing_channel', 'target_audience_area', 'target_audience_age',
                     'region', 'device', 'operating_system', 'browser', 'success']
 ordinal_encoder = OrdinalEncoder()
 df[categorical_cols] = ordinal_encoder.fit_transform(df[categorical_cols])
@@ -44,21 +44,6 @@ activation_function = st.sidebar.selectbox("Activation Function", ["relu", "sigm
 num_layers = st.sidebar.slider("Number of Layers", 1, 5, step=1, value=3)
 neurons_per_layer = st.sidebar.slider("Neurons per Layer", 8, 128, step=8, value=32)
 
-# Model Summary Button
-if st.sidebar.button("Show Model Summary"):
-    model = Sequential()
-    model.add(Dense(neurons_per_layer, activation=activation_function, input_shape=(X_train.shape[1],)))
-    for _ in range(num_layers - 1):
-        model.add(Dense(neurons_per_layer, activation=activation_function))
-    model.add(Dense(1, activation="sigmoid"))
-    
-    optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-    model.compile(loss="binary_crossentropy", optimizer=optimizer, metrics=["accuracy"])
-    
-    summary_str = []
-    model.summary(print_fn=lambda x: summary_str.append(x))
-    st.sidebar.text("\n".join(summary_str))
-
 # Train model function (cached for performance)
 @st.cache_resource
 def train_ann(epochs, batch_size, learning_rate, activation_function, num_layers, neurons_per_layer):
@@ -76,6 +61,21 @@ def train_ann(epochs, batch_size, learning_rate, activation_function, num_layers
     history = model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size, validation_data=(X_test, y_test), verbose=0)
     
     return model, history
+
+# Show Model Summary Button (Result appears on Main Page)
+if st.button("Show Model Summary"):
+    model = Sequential()
+    model.add(Dense(neurons_per_layer, activation=activation_function, input_shape=(X_train.shape[1],)))
+    for _ in range(num_layers - 1):
+        model.add(Dense(neurons_per_layer, activation=activation_function))
+    model.add(Dense(1, activation="sigmoid"))
+    
+    optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+    model.compile(loss="binary_crossentropy", optimizer=optimizer, metrics=["accuracy"])
+    
+    summary_str = []
+    model.summary(print_fn=lambda x: summary_str.append(x))
+    st.text("\n".join(summary_str))  # Shows the model summary on the main page
 
 # Train Model Button
 train_model_clicked = st.button("Train Model")
@@ -98,16 +98,26 @@ if train_model_clicked:
     st.metric(label="Model Accuracy", value=f"{accuracy*100:.2f}%")
     
     # Visualizations
-    st.subheader("Model Accuracy & Loss Over Epochs")
+
+    # Accuracy Graph
+    st.subheader("Model Accuracy Over Epochs")
     fig, ax = plt.subplots(figsize=(7, 5))
     ax.plot(history.history['accuracy'], label='Train Accuracy', color='blue')
     ax.plot(history.history['val_accuracy'], label='Validation Accuracy', color='red')
+    ax.legend()
+    ax.set_title("Training vs Validation Accuracy")
+    st.pyplot(fig)
+
+    # Loss Graph
+    st.subheader("Model Loss Over Epochs")
+    fig, ax = plt.subplots(figsize=(7, 5))
     ax.plot(history.history['loss'], label='Train Loss', linestyle='dashed', color='blue')
     ax.plot(history.history['val_loss'], label='Validation Loss', linestyle='dashed', color='red')
     ax.legend()
-    ax.set_title("Training vs Validation Accuracy & Loss")
+    ax.set_title("Training vs Validation Loss")
     st.pyplot(fig)
 
+    # Precision, Recall & F1-Score
     st.subheader("Precision, Recall & F1-Score")
     fig, ax = plt.subplots(figsize=(7, 5))
     metrics_df = pd.DataFrame({"Metric": ["Precision", "Recall", "F1-Score"], "Score": [precision, recall, f1]})
@@ -115,6 +125,7 @@ if train_model_clicked:
     ax.set_title("Precision, Recall & F1-Score")
     st.pyplot(fig)
 
+    # Prediction Probability Distribution
     st.subheader("Prediction Probability Distribution")
     fig, ax = plt.subplots(figsize=(7, 5))
     sns.histplot(y_pred_prob, bins=20, kde=True, ax=ax)
@@ -122,6 +133,7 @@ if train_model_clicked:
     ax.set_xlabel("Predicted Probability of Success")
     st.pyplot(fig)
 
+    # Confusion Matrix
     st.subheader("Confusion Matrix")
     fig, ax = plt.subplots(figsize=(7, 5))
     sns.heatmap(pd.crosstab(y_test, y_pred.ravel()), annot=True, fmt='d', ax=ax)
